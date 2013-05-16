@@ -21,7 +21,7 @@ PKGCONFIGFILES.files = libalignedtimer.pc
 PKGCONFIGFILES.path = /usr/lib/pkgconfig
 CONFIG += link_pkgconfig
 
-PKGCONFIG += dsme dsme_dbus_if gconf-2.0 libiphb
+PKGCONFIG += libiphb
 
 OTHER_FILES += libalignedtimer.pc
 
