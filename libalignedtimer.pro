@@ -6,4 +6,5 @@ SUBDIRS += lib \
 
 OTHER_FILES = \
     rpm/libalignedtimer.yaml \
-    rpm/libalignedtimer.spec
+    rpm/libalignedtimer.spec \
+    README.md

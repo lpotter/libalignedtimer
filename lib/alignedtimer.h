@@ -82,7 +82,7 @@ public:
     Q_INVOKABLE static void singleShot(int interval, QObject *receiver, const char *member, int timerWindow = 120);
 
     AlignedTimerError lastError() const;
-    bool isActive () const;
+    bool isActive() const;
 
 public Q_SLOTS:
     void start(int interval, int timerWindow = 120);

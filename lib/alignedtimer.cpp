@@ -120,7 +120,7 @@ QAlignedTimer::~QAlignedTimer()
 */
 void QAlignedTimer::start(int interval, int windowTime)
 {
-    if (/*interval > maximumTime ||*/ interval <= 0) {
+    if (interval <= 0) {
         d->m_lastError = QAlignedTimer::InvalidArgument;
         Q_EMIT error(d->m_lastError);
         return;
@@ -133,9 +133,7 @@ void QAlignedTimer::start(int interval, int windowTime)
 */
 void QAlignedTimer::start()
 {
-    int intervalTime = interval();
-    int windowOfTime = timerWindow();
-    if ((intervalTime > windowOfTime) || (windowOfTime <= 0)) { //FIXME
+    if (windowOfTime <= 0) {
         d->m_lastError = QAlignedTimer::InvalidArgument;
         Q_EMIT error(d->m_lastError);
         return;
