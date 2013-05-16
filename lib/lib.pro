@@ -1,5 +1,3 @@
-QT       -= gui
-
 TARGET = alignedtimer
 TEMPLATE = lib
 

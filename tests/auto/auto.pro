@@ -1,8 +1,8 @@
+TEMPLATE = app
 TARGET = tst_qalignedtimer
 CONFIG+=testcase
 
 QT += testlib network
-QT -= gui
 
 SOURCES  += tst_qalignedtimer.cpp
 INCLUDEPATH += ../../lib
