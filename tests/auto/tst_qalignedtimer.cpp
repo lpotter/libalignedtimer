@@ -1,0 +1,274 @@
+/****************************************************************************
+**
+** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
+** Contact: http://www.qt-project.org/legal
+**
+** This file is part of the Qt Mobility Components.
+**
+** $QT_BEGIN_LICENSE:LGPL$
+** Commercial License Usage
+** Licensees holding valid commercial Qt licenses may use this file in
+** accordance with the commercial license agreement provided with the
+** Software or, alternatively, in accordance with the terms contained in
+** a written agreement between you and Digia.  For licensing terms and
+** conditions see http://qt.digia.com/licensing.  For further information
+** use the contact form at http://qt.digia.com/contact-us.
+**
+** GNU Lesser General Public License Usage
+** Alternatively, this file may be used under the terms of the GNU Lesser
+** General Public License version 2.1 as published by the Free Software
+** Foundation and appearing in the file LICENSE.LGPL included in the
+** packaging of this file.  Please review the following information to
+** ensure the GNU Lesser General Public License version 2.1 requirements
+** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+**
+** In addition, as a special exception, Digia gives you certain additional
+** rights.  These rights are described in the Digia Qt LGPL Exception
+** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
+**
+** GNU General Public License Usage
+** Alternatively, this file may be used under the terms of the GNU
+** General Public License version 3.0 as published by the Free Software
+** Foundation and appearing in the file LICENSE.GPL included in the
+** packaging of this file.  Please review the following information to
+** ensure the GNU General Public License version 3.0 requirements will be
+** met: http://www.gnu.org/copyleft/gpl.html.
+**
+**
+** $QT_END_LICENSE$
+**
+****************************************************************************/
+
+//TESTED_COMPONENT=src/systeminfo
+
+#include <QtTest/QtTest>
+#include "alignedtimer.h"
+
+Q_DECLARE_METATYPE(QAlignedTimer::AlignedTimerError);
+
+static bool waitForSignal(QObject *obj, const char *signal, int timeout = 0)
+{
+    QEventLoop loop;
+    QObject::connect(obj, signal, &loop, SLOT(quit()));
+    QTimer timer;
+    QSignalSpy timeoutSpy(&timer, SIGNAL(timeout()));
+    if (timeout > 0) {
+        QObject::connect(&timer, SIGNAL(timeout()), &loop, SLOT(quit()));
+        timer.setSingleShot(true);
+        timer.start(timeout);
+    }
+    loop.exec();
+    return timeoutSpy.isEmpty();
+}
+
+class tst_QAlignedTimer : public QObject
+{
+    Q_OBJECT
+
+private slots:
+    void initTestCase();
+
+    void tst_wokeUp();
+
+    void tst_interval();
+    void tst_timerWindow();
+
+    void tst_setSingleShot();
+    void tst_isSingleShot() ;
+
+    void tst_singleShot();
+
+    void tst_lastError();
+
+    void tst_start();
+    void tst_stop();
+
+public Q_SLOTS:
+    void timeout();
+
+private:
+    QAlignedTimer alignedtime2r;
+
+};
+
+void tst_QAlignedTimer::initTestCase()
+{
+   qRegisterMetaType<QAlignedTimer::AlignedTimerError>("QAlignedTimer::AlignedTimerError");
+}
+
+void tst_QAlignedTimer::tst_wokeUp()
+{
+    QAlignedTimer alignedtimer;
+    if(alignedtimer.lastError() == QAlignedTimer::AlignedTimerNotSupported) {
+        QSKIP("This test not supported on this platform");
+    }
+    alignedtimer.setSingleShot(true);
+    alignedtimer.start(8,10);
+
+    QVERIFY(alignedtimer.isActive());
+
+    alignedtimer.wokeUp();
+    QVERIFY(!alignedtimer.isActive());
+}
+
+void tst_QAlignedTimer::tst_interval()
+{
+    QAlignedTimer alignedtimer;
+    if(alignedtimer.lastError() == QAlignedTimer::AlignedTimerNotSupported) {
+        QSKIP("This test not supported on this platform");
+    }
+    alignedtimer.setInterval(0);
+    QVERIFY(alignedtimer.interval() == 0);
+    alignedtimer.setInterval(10);
+    QVERIFY(alignedtimer.interval() == 10);
+
+    alignedtimer.setInterval(-1);
+    alignedtimer.start();
+    QVERIFY(alignedtimer.lastError() == QAlignedTimer::InvalidArgument);
+}
+
+void tst_QAlignedTimer::tst_timerWindow()
+{
+
+    QAlignedTimer alignedtimer;
+    if(alignedtimer.lastError() == QAlignedTimer::AlignedTimerNotSupported) {
+        QSKIP("This test not supported on this platform");
+    }
+
+    alignedtimer.setInterval(0);
+    alignedtimer.setTimerWindow(0);
+    QVERIFY(alignedtimer.timerWindow() == 0);
+
+    alignedtimer.setTimerWindow(11);
+    QVERIFY(alignedtimer.timerWindow() == 11);
+
+    alignedtimer.setTimerWindow(-1);
+    alignedtimer.start();
+    QVERIFY(alignedtimer.lastError() == QAlignedTimer::InvalidArgument);
+}
+
+void tst_QAlignedTimer::tst_setSingleShot()
+{
+    QAlignedTimer alignedtimer;
+    if(alignedtimer.lastError() == QAlignedTimer::AlignedTimerNotSupported) {
+        QSKIP("This test not supported on this platform");
+    }
+    alignedtimer.setSingleShot(true);
+    QVERIFY(alignedtimer.isSingleShot());
+    alignedtimer.setSingleShot(false);
+    QVERIFY(!alignedtimer.isSingleShot());
+}
+
+void tst_QAlignedTimer::tst_isSingleShot()
+{
+    QAlignedTimer alignedtimer;
+    if(alignedtimer.lastError() == QAlignedTimer::AlignedTimerNotSupported) {
+        QSKIP("This test not supported on this platform");
+    }
+    alignedtimer.setSingleShot(true);
+    QVERIFY(alignedtimer.isSingleShot());
+    alignedtimer.setSingleShot(false);
+    QVERIFY(!alignedtimer.isSingleShot());
+}
+
+void tst_QAlignedTimer::tst_singleShot()
+{
+    QAlignedTimer alignedtimer;
+    if(alignedtimer.lastError() == QAlignedTimer::AlignedTimerNotSupported) {
+        QSKIP("This test not supported on this platform");
+    }
+
+    alignedtimer.setSingleShot(true);
+    alignedtimer.start(2,3);
+    QVERIFY(alignedtimer.isActive());
+    QVERIFY(::waitForSignal(&alignedtimer, SIGNAL(timeout()), 4 * 1000));
+    QVERIFY(!alignedtimer.isActive());
+
+    alignedtimer.setSingleShot(false);
+    alignedtimer.start(2,3);
+    QVERIFY(alignedtimer.isActive());
+    QVERIFY(::waitForSignal(&alignedtimer, SIGNAL(timeout()), 4 * 1000));
+    QVERIFY(alignedtimer.isActive());
+}
+
+void tst_QAlignedTimer::tst_lastError()
+{
+    QAlignedTimer alignedtimer;
+    if(alignedtimer.lastError() == QAlignedTimer::AlignedTimerNotSupported) {
+        QSKIP("This test not supported on this platform");
+    }
+}
+
+void tst_QAlignedTimer::tst_start()
+{
+    QAlignedTimer alignedtimer;
+    if(alignedtimer.lastError() == QAlignedTimer::AlignedTimerNotSupported) {
+        QSKIP("This test not supported on this platform");
+    }
+
+
+    alignedtimer.start(8,10);
+    QVERIFY(alignedtimer.isActive());
+    alignedtimer.stop();
+    alignedtimer.setInterval(8);
+    alignedtimer.setTimerWindow(2);
+    alignedtimer.start();
+    QVERIFY(alignedtimer.isActive());
+
+    alignedtime2r.start(2,3);
+    QVERIFY(alignedtime2r.isActive());
+    QVERIFY(::waitForSignal(&alignedtime2r, SIGNAL(timeout()), 5 * 1000));
+    QVERIFY(alignedtime2r.isActive());
+
+//    QAlignedTimer alignedtimer2;
+//    alignedtimer2.setInterval(11);
+//    alignedtimer2.setTimerWindow(10);
+//    alignedtimer2.start();
+//    QVERIFY(alignedtimer2.lastError() == QAlignedTimer::InvalidArgument);
+//    QVERIFY(!alignedtimer2.isActive());
+
+//    QAlignedTimer alignedtimer3;
+//    alignedtimer3.start(11,10);
+//    QVERIFY(alignedtimer3.lastError() == QAlignedTimer::InvalidArgument);
+//    QVERIFY(!alignedtimer3.isActive());
+
+    QAlignedTimer alignedtimer4;
+    alignedtimer4.start(10,0);
+    QVERIFY(alignedtimer4.lastError() == QAlignedTimer::InvalidArgument);
+    QVERIFY(!alignedtimer4.isActive());
+
+}
+
+void tst_QAlignedTimer::tst_stop()
+{
+    QAlignedTimer alignedtimer;
+    if(alignedtimer.lastError() == QAlignedTimer::AlignedTimerNotSupported) {
+        QSKIP("This test not supported on this platform");
+    }
+    alignedtimer.start(8,10);
+    alignedtimer.stop();
+    QVERIFY(!alignedtimer.isActive());
+
+    alignedtimer.start();
+    alignedtimer.stop();//symbian this will just reset
+    QVERIFY(!alignedtimer.isActive());
+
+    alignedtimer.setSingleShot(true);
+    alignedtimer.start();
+    alignedtimer.stop();//symbian this will just reset
+    QVERIFY(!alignedtimer.isActive());
+
+    alignedtimer.start();
+    alignedtimer.stop();//symbian this will just reset
+    QVERIFY(!alignedtimer.isActive());
+}
+
+void tst_QAlignedTimer::timeout()
+{
+    QVERIFY(!alignedtime2r.isActive());
+}
+
+
+QTEST_MAIN(tst_QAlignedTimer)
+
+#include "tst_qalignedtimer.moc"

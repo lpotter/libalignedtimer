@@ -1,0 +1,49 @@
+Name: libalignedtimer
+Summary: A library of Qt bindings for libalignedtimer
+Version: 0.1
+Release: 1
+Group: System/Libraries
+License: LGPLv2.1
+URL: https://github.com/nemomobile/libalignedtimer
+Sources:
+    - "%{name}-%{version}.tar.bz2"
+Description: |
+    This package contains Qt bindings for ofono cellular service
+    interfaces.
+PkgConfigBR:
+    - Qt5Core
+    - Qt5Qml
+    - libiphb
+Configure: none
+Builder: qmake5
+SetupOptions: "-q -n %{name}-%{version}"
+Files:
+    - "%{_libdir}/%{name}.so.*"
+
+SubPackages:
+    - Name: declarative
+      Summary: Declarative plugin for libalignedtimer
+      Group: Development/Tools
+      Description: This package contains declarative plugin for libalignedtimer.
+      Requires:
+          - "%{name} = %{version}"
+      Files:
+          - "%{_libdir}/qt5/imports/org/nemomobile/alignedtimer/*"
+
+    - Name: tests
+      Summary: unit test for the alignedtimer
+      Group: Development/Tools
+      Description: This package contains qml test for alignedtimer
+      Files:
+          - "%{_libdir}/%{name}/tests/tst_qalignedtimer"
+
+    - Name: devel
+      Summary: Development files for libalignedtimer
+      Group: Development/Libraries
+      Description: This package contains the development header files for libalignedtimer
+      Requires:
+          - "%{name} = %{version}"
+      Files:
+          - "%{_libdir}/%{name}.so"
+          - "%{_libdir}/pkgconfig/libalignedtimer.pc"
+          - "%{_includedir}/alignedtimer/*.h"

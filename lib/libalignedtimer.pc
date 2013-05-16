@@ -1,0 +1,12 @@
+prefix=/usr
+includedir=${prefix}/include
+libdir=${prefix}/lib/
+
+Name: AlignedTimer
+Description: Aligned timer Library
+Version: 1.0.0
+Requires: Qt5Core libiphb
+Libs: -L${libdir} -liphb
+Cflags: -I${includedir}/alignedtimer
+
+
