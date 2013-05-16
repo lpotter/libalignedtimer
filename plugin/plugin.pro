@@ -34,3 +34,5 @@ unix {
     INSTALLS += target qmldir
 }
 
+QT -= gui
+
